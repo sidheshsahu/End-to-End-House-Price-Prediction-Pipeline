@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build: .
+    container_name: house_price_app
+    ports:
+      - "5000:5000"
+    restart: always

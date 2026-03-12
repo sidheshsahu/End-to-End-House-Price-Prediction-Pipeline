@@ -25,7 +25,7 @@ pipeline {
 
         stage('Terraform Security Scan') {
             steps {
-                sh 'docker run --rm -v $(pwd):/project aquasec/trivy config /project/terraform'
+                sh 'docker run --rm -v $(pwd):/project aquasec/trivy config /project'
             }
         }
 

@@ -1,58 +1,30 @@
 pipeline {
-    agent any
-
+    agent any 
     stages {
-
-        stage('Checkout Code') {
+        stage('Pull') { 
             steps {
-                git branch: 'main',
-                url: 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline'
+                git 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline'
             }
         }
-
-        stage('Debug Workspace') {
+        stage('terraform init') {
             steps {
-                sh '''
-                pwd
-                ls -R
-                '''
+                sh 'terraform init'
             }
         }
-
-        stage('Terraform Init') {
-            agent {
-                docker { image 'hashicorp/terraform:latest' }
-            }
+        stage('terraform plan') {
             steps {
-                sh '''
-                cd terraform
-                terraform init
-                '''
+                sh 'terraform plan'
             }
         }
-
-        stage('Terraform Validate') {
-            agent {
-                docker { image 'hashicorp/terraform:latest' }
-            }
+        stage('terraform validate') {
             steps {
-                sh '''
-                cd terraform
-                terraform validate
-                '''
+                sh 'terraform validate'
             }
         }
-
-        stage('Trivy Security Scan') {
-            agent {
-                docker { image 'aquasec/trivy:latest' }
-            }
+        stage('terraform apply') {
             steps {
-                sh '''
-                trivy config --severity HIGH,CRITICAL terraform/
-                '''
+                sh 'terraform ${Action} --auto-approve'
             }
         }
-
     }
 }

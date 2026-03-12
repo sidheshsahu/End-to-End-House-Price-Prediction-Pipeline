@@ -5,7 +5,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline'
+                git branch: 'main',
+                url: 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline'
             }
         }
 
@@ -19,35 +20,36 @@ pipeline {
         }
 
         stage('Terraform Init') {
+            agent {
+                docker { image 'hashicorp/terraform:latest' }
+            }
             steps {
                 sh '''
-                docker run --rm \
-                -v $(pwd):/project \
-                -w /project/terraform \
-                hashicorp/terraform:latest init
+                cd terraform
+                terraform init
                 '''
             }
         }
 
         stage('Terraform Validate') {
+            agent {
+                docker { image 'hashicorp/terraform:latest' }
+            }
             steps {
                 sh '''
-                docker run --rm \
-                -v $(pwd):/project \
-                -w /project/terraform \
-                hashicorp/terraform:latest validate
+                cd terraform
+                terraform validate
                 '''
             }
         }
 
-        stage('Terraform Security Scan') {
+        stage('Trivy Security Scan') {
+            agent {
+                docker { image 'aquasec/trivy:latest' }
+            }
             steps {
                 sh '''
-                docker run --rm \
-                -v $(pwd):/project \
-                aquasec/trivy:latest config \
-                --severity HIGH,CRITICAL \
-                /project/terraform
+                trivy config --severity HIGH,CRITICAL terraform/
                 '''
             }
         }

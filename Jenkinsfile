@@ -4,7 +4,7 @@ pipeline {
         stage('Pull') { 
             steps {
                 git branch: 'main',
-                git 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline.git'
+                url: 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline.git'
             }
         }
         stage('terraform init') {

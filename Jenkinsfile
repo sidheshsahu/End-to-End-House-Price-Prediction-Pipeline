@@ -9,15 +9,15 @@ pipeline {
             }
         }
 
-        stage('Terraform Init') {
-            steps {
-                sh 'docker run --rm -v $(pwd)/terraform:/workspace -w /workspace hashicorp/terraform:latest init'
-            }
+       stage('Terraform Init') {
+        steps {
+            sh 'docker run --rm -v $(pwd):/workspace -w /workspace/terraform hashicorp/terraform:latest init'
         }
+    }
 
         stage('Terraform Validate') {
             steps {
-                sh 'docker run --rm -v $(pwd)/terraform:/workspace -w /workspace hashicorp/terraform:latest validate'
+                sh 'docker run --rm -v $(pwd):/workspace -w /workspace/terraform hashicorp/terraform:latest validate'
             }
         }
 

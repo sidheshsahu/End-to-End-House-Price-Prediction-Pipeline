@@ -12,21 +12,8 @@ pipeline {
         stage('Debug Workspace') {
             steps {
                 sh '''
-                echo "Workspace path:"
                 pwd
-                echo "Files:"
                 ls -R
-                '''
-            }
-        }
-
-        stage('Check Terraform File') {
-            steps {
-                sh '''
-                echo "Terraform folder:"
-                ls -l terraform
-                echo "Terraform file content:"
-                cat terraform/main.tf
                 '''
             }
         }
@@ -35,7 +22,7 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                -v $WORKSPACE:/project \
+                -v $(pwd):/project \
                 -w /project/terraform \
                 hashicorp/terraform:latest init
                 '''
@@ -46,7 +33,7 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                -v $WORKSPACE:/project \
+                -v $(pwd):/project \
                 -w /project/terraform \
                 hashicorp/terraform:latest validate
                 '''
@@ -57,7 +44,7 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                -v $WORKSPACE:/project \
+                -v $(pwd):/project \
                 aquasec/trivy:latest config \
                 --severity HIGH,CRITICAL \
                 /project/terraform

@@ -31,9 +31,6 @@ pipeline {
             }
         }
 
-    
-
-
     stage('Debug Files') {
     steps {
         sh '''
@@ -41,5 +38,6 @@ pipeline {
         ls -R
         '''
     }
+}
 }
 }

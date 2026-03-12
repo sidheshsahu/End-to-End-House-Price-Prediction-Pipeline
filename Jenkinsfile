@@ -11,24 +11,24 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh 'docker run --rm -v $(pwd):/workspace -w /workspace/terraform hashicorp/terraform:latest init'
+                sh 'docker run --rm -v $(pwd)/terraform:/workspace -w /workspace hashicorp/terraform:latest init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh 'docker run --rm -v $(pwd):/workspace -w /workspace/terraform hashicorp/terraform:latest validate'
+                sh 'docker run --rm -v $(pwd)/terraform:/workspace -w /workspace hashicorp/terraform:latest validate'
             }
         }
 
         stage('Terraform Security Scan') {
-    steps {
-        sh '''
-        docker run --rm \
-        -v $(pwd):/project \
-        aquasec/trivy config /project
-        '''
-    }
-}
+            steps {
+                sh '''
+                docker run --rm \
+                -v $(pwd)/terraform:/project \
+                aquasec/trivy config /project
+                '''
+            }
+        }
     }
 }

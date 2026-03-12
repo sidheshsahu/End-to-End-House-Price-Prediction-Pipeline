@@ -79,23 +79,20 @@ pipeline {
             }
         }
 
-        stage('Debug Workspace') {
-            steps {
-                sh '''
-                pwd
-                ls -la terraform/
-                cat terraform/main.tf
-                '''
-            }
-        }
-
         stage('Terraform Validate') {
             steps {
                 sh '''
                 cd terraform
-                wget -q https://releases.hashicorp.com/terraform/1.7.0/terraform_1.7.0_linux_amd64.zip
-                unzip -o terraform_1.7.0_linux_amd64.zip
-                ./terraform init
+
+                echo "=== Downloading Terraform ==="
+                curl -fsSL https://releases.hashicorp.com/terraform/1.7.0/terraform_1.7.0_linux_amd64.zip -o terraform.zip
+                unzip -o terraform.zip
+                chmod +x terraform
+
+                echo "=== Terraform Init ==="
+                ./terraform init -backend=false
+
+                echo "=== Terraform Validate ==="
                 ./terraform validate
                 '''
             }

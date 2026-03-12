@@ -30,5 +30,16 @@ pipeline {
                 '''
             }
         }
+
     }
+
+
+    stage('Debug Files') {
+    steps {
+        sh '''
+        echo "Workspace files:"
+        ls -R
+        '''
+    }
+}
 }

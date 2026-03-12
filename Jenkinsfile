@@ -33,37 +33,39 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh '''
+                sh """
                 docker run --rm \
-                -v $WORKSPACE:/project \
+                -v ${WORKSPACE}:/project \
                 -w /project/terraform \
                 hashicorp/terraform:latest init
-                '''
+                """
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh '''
+                sh """
                 docker run --rm \
-                -v $WORKSPACE:/project \
+                -v ${WORKSPACE}:/project \
                 -w /project/terraform \
                 hashicorp/terraform:latest validate
-                '''
+                """
             }
         }
 
         stage('Terraform Security Scan') {
             steps {
-                sh '''
+                sh """
                 docker run --rm \
-                -v $WORKSPACE:/project \
+                -v ${WORKSPACE}:/project \
                 aquasec/trivy:latest config \
                 --severity HIGH,CRITICAL \
+                --exit-code 1 \
                 /project/terraform
-                '''
+                """
             }
         }
 
     }
 }
+

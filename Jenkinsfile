@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Host path for Docker volume mount
+        HOST_WORKSPACE = "/var/jenkins_home/workspace/Devops"
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -16,16 +21,8 @@ pipeline {
                 pwd
                 echo "Files:"
                 ls -R
-                '''
-            }
-        }
-
-        stage('Check Terraform File') {
-            steps {
-                sh '''
-                echo "Terraform folder:"
-                ls -l terraform
-                echo "Terraform file content:"
+                echo "Terraform file check:"
+                ls -la terraform/
                 cat terraform/main.tf
                 '''
             }
@@ -35,7 +32,7 @@ pipeline {
             steps {
                 sh """
                 docker run --rm \
-                -v ${WORKSPACE}:/project \
+                -v ${HOST_WORKSPACE}:/project \
                 -w /project/terraform \
                 hashicorp/terraform:latest init
                 """
@@ -46,7 +43,7 @@ pipeline {
             steps {
                 sh """
                 docker run --rm \
-                -v ${WORKSPACE}:/project \
+                -v ${HOST_WORKSPACE}:/project \
                 -w /project/terraform \
                 hashicorp/terraform:latest validate
                 """
@@ -57,7 +54,7 @@ pipeline {
             steps {
                 sh """
                 docker run --rm \
-                -v ${WORKSPACE}:/project \
+                -v ${HOST_WORKSPACE}:/project \
                 aquasec/trivy:latest config \
                 --severity HIGH,CRITICAL \
                 --exit-code 1 \
@@ -68,4 +65,3 @@ pipeline {
 
     }
 }
-

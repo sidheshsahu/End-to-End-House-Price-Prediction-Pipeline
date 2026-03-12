@@ -20,6 +20,17 @@ pipeline {
             }
         }
 
+        stage('Check Terraform File') {
+        steps {
+            sh '''
+            ls -l terraform
+            file terraform/main.tf
+            cat terraform/main.tf
+            '''
+        }
+    }
+
+
         stage('Terraform Init') {
             steps {
                 sh '''

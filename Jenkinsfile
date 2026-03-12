@@ -19,13 +19,13 @@ pipeline {
 
         stage('Terraform Validate') {
             steps {
-                sh 'docker run --rm -v PWD:/terraform:/workspace -w /workspace hashicorp/terraform:latest validate'
+                sh 'docker run --rm -v $PWD:/terraform:/workspace -w /workspace hashicorp/terraform:latest validate'
             }
         }
 
         stage('Terraform Security Scan') {
             steps {
-                sh 'docker run --rm -v PWD:/project aquasec/trivy config /project'
+                sh 'docker run --rm -v $PWD:/project aquasec/trivy config /project'
             }
         }
 

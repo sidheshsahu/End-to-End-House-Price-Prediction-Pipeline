@@ -1,31 +1,69 @@
 pipeline {
-    agent any 
+    agent any
+
     stages {
-        stage('Pull') { 
+
+        stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline.git'
+                git branch: 'main', url: 'https://github.com/sidheshsahu/End-to-End-House-Price-Prediction-Pipeline'
             }
         }
-        stage('terraform init') {
+
+        stage('Debug Workspace') {
             steps {
-                sh 'terraform init'
+                sh '''
+                echo "Workspace path:"
+                pwd
+                echo "Files:"
+                ls -R
+                '''
             }
         }
-        stage('terraform plan') {
+
+        stage('Check Terraform File') {
             steps {
-                sh 'terraform plan'
+                sh '''
+                echo "Terraform folder:"
+                ls -l terraform
+                echo "Terraform file content:"
+                cat terraform/main.tf
+                '''
             }
         }
-        stage('terraform validate') {
+
+        stage('Terraform Init') {
             steps {
-                sh 'terraform validate'
+                sh '''
+                docker run --rm \
+                -v $WORKSPACE:/project \
+                -w /project/terraform \
+                hashicorp/terraform:latest init
+                '''
             }
         }
-        stage('terraform apply') {
+
+        stage('Terraform Validate') {
             steps {
-                sh 'terraform ${Action} --auto-approve'
+                sh '''
+                docker run --rm \
+                -v $WORKSPACE:/project \
+                -w /project/terraform \
+                hashicorp/terraform:latest validate
+                '''
             }
         }
+
+        stage('Terraform Security Scan') {
+            steps {
+                sh '''
+                docker run --rm \
+                -v $WORKSPACE:/project \
+                aquasec/trivy:latest config \
+                --severity HIGH,CRITICAL \
+                /project/terraform
+                '''
+            }
+        }
+
     }
 }

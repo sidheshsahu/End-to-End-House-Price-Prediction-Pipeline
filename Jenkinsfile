@@ -9,23 +9,27 @@ pipeline {
             }
         }
 
+        stages {
+
         stage('Terraform Init') {
             steps {
-                sh '''
-                cd terraform
-                terraform init
-                '''
+                sh 'docker run --rm -v $(pwd)/terraform:/workspace -w /workspace hashicorp/terraform:latest init'
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                sh '''
-                cd terraform
-                terraform validate
-                '''
+                sh 'docker run --rm -v $(pwd)/terraform:/workspace -w /workspace hashicorp/terraform:latest validate'
             }
         }
+
+        stage('Terraform Security Scan') {
+            steps {
+                sh 'docker run --rm -v $(pwd):/project aquasec/trivy config /project/terraform'
+            }
+        }
+
+    }
 
     }
 }

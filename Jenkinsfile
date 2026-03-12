@@ -12,9 +12,9 @@ pipeline {
         stage('Debug Workspace') {
             steps {
                 sh '''
-                echo "Current workspace:"
+                echo "Workspace path:"
                 pwd
-                echo "Workspace files:"
+                echo "Files:"
                 ls -R
                 '''
             }
@@ -24,8 +24,8 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                -v $WORKSPACE/terraform:/workspace \
-                -w /workspace \
+                -v $WORKSPACE:/project \
+                -w /project/terraform \
                 hashicorp/terraform:latest init
                 '''
             }
@@ -35,8 +35,8 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                -v $WORKSPACE/terraform:/workspace \
-                -w /workspace \
+                -v $WORKSPACE:/project \
+                -w /project/terraform \
                 hashicorp/terraform:latest validate
                 '''
             }
@@ -46,8 +46,10 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                -v $WORKSPACE/terraform:/project \
-                aquasec/trivy config --severity HIGH,CRITICAL /project
+                -v $WORKSPACE:/project \
+                aquasec/trivy:latest config \
+                --severity HIGH,CRITICAL \
+                /project/terraform
                 '''
             }
         }

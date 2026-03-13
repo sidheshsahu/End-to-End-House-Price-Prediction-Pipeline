@@ -1,4 +1,4 @@
-# 🏠 End-to-End House Price Prediction — DevSecOps Pipeline
+# End-to-End House Price Prediction — DevSecOps Pipeline
 
 ## Project Overview
 
@@ -6,49 +6,8 @@ This project demonstrates a complete DevSecOps pipeline for a **Mumbai House Pri
 
 ---
 
-## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Developer Machine                         │
-│                                                             │
-│   GitHub Repo ──► Jenkins (Docker) ──► Trivy Security Scan │
-│                         │                                   │
-│                         ▼                                   │
-│                  Terraform Plan/Apply                       │
-└─────────────────────────────┬───────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Microsoft Azure                           │
-│                                                             │
-│   Resource Group ──► VNet ──► Subnet ──► NSG               │
-│                                │                            │
-│                                ▼                            │
-│                         Linux VM (Ubuntu 22.04)             │
-│                         Public IP: 74.225.160.111           │
-│                         Docker ──► Flask App (Port 5000)    │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## ☁️ Cloud Provider
-
-**Microsoft Azure** — Central India Region
-
-| Resource | Name |
-|----------|------|
-| Resource Group | house_price_prediction |
-| Virtual Machine | devops-vm (Standard_B1s) |
-| Virtual Network | devops-vnet (10.0.0.0/16) |
-| Subnet | devops-subnet (10.0.1.0/24) |
-| Network Security Group | devops-nsg |
-| Public IP | devops-public-ip (Static) |
-
----
-
-## 🛠️ Tools and Technologies
+## Tools and Technologies
 
 | Category | Tool |
 |----------|------|
@@ -64,13 +23,7 @@ This project demonstrates a complete DevSecOps pipeline for a **Mumbai House Pri
 
 ---
 
-## 🌐 Live Application
-
-**http://74.225.160.111:5000**
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── app.py                    # Flask backend
@@ -89,7 +42,7 @@ This project demonstrates a complete DevSecOps pipeline for a **Mumbai House Pri
 
 ---
 
-## 🔄 Jenkins Pipeline Stages
+## Jenkins Pipeline Stages
 
 ```
 Stage 1: Checkout Code
@@ -113,44 +66,7 @@ Stage 5: Terraform Apply
     └── Output public IP
 ```
 
----
-
-## 🔒 Security — Before & After
-
-### Before Fix — FAILED ❌ (Build #29)
-
-```
-main.tf (terraform)
-===================
-Tests: 2 (SUCCESSES: 0, FAILURES: 2)
-Failures: 2 (HIGH: 0, CRITICAL: 2)
-
-AZU-0047 (CRITICAL): Security group rule allows
-unrestricted ingress from any IP address.
-
-AZU-0050 (CRITICAL): Security group rule allows
-unrestricted ingress to SSH port from any IP address.
-
-Vulnerable code:
-source_address_prefix = "*"   ← SSH open to 0.0.0.0/0
-```
-
-### After Fix — PASSED ✅ (Build #38)
-
-```
-main.tf (terraform)
-===================
-Tests: 2 (SUCCESSES: 2, FAILURES: 0)
-
-Fixes Applied:
-1. source_address_prefix = "152.59.63.182/32"  ← SSH restricted to specific IP
-2. disable_password_authentication = true       ← SSH key auth only
-3. admin_ssh_key block added                    ← RSA 4096-bit key
-```
-
----
-
-## 🤖 AI Usage Log (GenAI Report)
+##  AI Usage Log (GenAI Report)
 
 ### Exact Prompt Used
 
@@ -185,13 +101,10 @@ Please:
 |---------------|-----|----------|------|
 | SSH open to entire internet | AZU-0047 | CRITICAL | Any attacker can attempt brute force on port 22 |
 | Unrestricted SSH ingress | AZU-0050 | CRITICAL | No IP restriction means global exposure |
-| Password authentication enabled | AZU-0039 | HIGH | Passwords can be brute-forced unlike SSH keys |
 
 **Detailed Risk Explanation (AI Generated):**
 
 - **AZU-0047 & AZU-0050**: Setting `source_address_prefix = "*"` means SSH port 22 is accessible from the entire internet (`0.0.0.0/0`). Any malicious actor worldwide can attempt to connect and brute-force credentials, potentially gaining full server access leading to data theft, ransomware deployment, or cryptomining.
-
-- **AZU-0039**: `disable_password_authentication = false` allows password-based SSH login. Passwords are significantly weaker than SSH keys and susceptible to dictionary attacks and credential stuffing.
 
 ---
 
@@ -200,16 +113,14 @@ Please:
 | Change | Before | After | Impact |
 |--------|--------|-------|--------|
 | SSH source IP | `"*"` (entire internet) | `"152.59.63.182/32"` (specific IP only) | Eliminates AZU-0047 & AZU-0050 |
-| Password auth | `false` (enabled) | `true` (disabled) | Eliminates AZU-0039 |
-| Authentication method | Password | SSH RSA 4096-bit key | Cryptographically secure access |
 
 **Result:**
-- Before: 2 CRITICAL + 1 HIGH vulnerability → Pipeline **FAILED** ❌
-- After: 0 vulnerabilities → Pipeline **PASSED** ✅
+- Before: 2 CRITICAL + 1 HIGH vulnerability → Pipeline **FAILED**
+- After: 0 vulnerabilities → Pipeline **PASSED**
 
 ---
 
-## 🐳 Docker Setup
+##  Docker Setup
 
 ### Dockerfile
 ```dockerfile
@@ -231,10 +142,9 @@ services:
     ports:
       - "5000:5000"
 ```
-
 ---
 
-## 🚀 How to Run Locally
+##  How to Run Locally
 
 ```bash
 # Clone the repository
@@ -247,18 +157,17 @@ docker-compose up --build -d
 # Access the app
 http://localhost:5000
 ```
-
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 | Screenshot | Description |
 |------------|-------------|
-| Jenkins Build #29 | Initial FAILING pipeline — Trivy found 2 CRITICAL vulnerabilities |
-| Jenkins Build #38 | Final PASSING pipeline — Zero vulnerabilities after AI remediation |
+| Jenkins Build 29| Initial FAILING pipeline — Trivy found 2 CRITICAL vulnerabilities |
+| Jenkins Build 30| Final PASSING pipeline — Zero vulnerabilities after AI remediation |
+| Jenkins Build 42| Terraform Deployment|
 | Azure Portal | VM running with public IP |
 | App on Cloud IP | http://74.225.160.111:5000 |
 
 ---
 
-*This project was completed as part of the GET 2026 DevOps Assignment.*

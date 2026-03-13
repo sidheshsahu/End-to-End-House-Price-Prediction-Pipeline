@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "house_price_prediction_1"
+  name     = "house_price_prediction"
   location = "Central India"
 }
 

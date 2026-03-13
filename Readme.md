@@ -163,10 +163,10 @@ http://localhost:5000
 
 | Screenshot | Description |
 |------------|-------------|
-| Jenkins Build 29| Initial FAILING pipeline — Trivy found 2 CRITICAL vulnerabilities |
-| Jenkins Build 30| Final PASSING pipeline — Zero vulnerabilities after AI remediation |
-| Jenkins Build 42| Terraform Deployment|
-| Azure Portal | VM running with public IP |
+| Jenkins Failed| Initial FAILING pipeline — Trivy found 2 CRITICAL vulnerabilities |
+| Jenkins Success| Final PASSING pipeline — Zero vulnerabilities after AI remediation |
+| Terraform Deployment| Terraform Plan and apply|
+| Azure Portal | Resources and VM |
 | App on Cloud IP | http://74.225.160.111:5000 |
 
 ---

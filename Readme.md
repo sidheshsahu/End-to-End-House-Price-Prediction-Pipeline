@@ -68,7 +68,7 @@ Stage 5: Terraform Apply
 
 ##  AI Usage Log (GenAI Report)
 
-### Exact Prompt Used
+#### Exact Prompt Used
 
 ```
 I am a DevOps engineer. My Jenkins pipeline ran a Trivy security
